@@ -1,0 +1,4 @@
+contentful:
+  space-id: ${CONTENTFUL_SPACE_ID}
+  access-token: ${CONTENTFUL_ACCESS_TOKEN}
+  base-url: https://cdn.contentful.com
