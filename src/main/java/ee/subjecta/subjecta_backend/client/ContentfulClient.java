@@ -1,5 +1,6 @@
 package ee.subjecta.subjecta_backend.client;
 
+import ee.subjecta.subjecta_backend.client.contentful.model.ContentfulResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -21,14 +22,14 @@ public class ContentfulClient {
         this.accessToken = accessToken;
     }
 
-    public String fetchEntries() {
+    public ContentfulResponse fetchEntries() {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder
                         .path("/spaces/{spaceId}/entries")
                         .queryParam("access_token", accessToken)
                         .build(spaceId))
                 .retrieve()
-                .bodyToMono(String.class)
+                .bodyToMono(ContentfulResponse.class)
                 .block();
     }
 }
