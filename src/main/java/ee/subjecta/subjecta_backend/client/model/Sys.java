@@ -1,4 +1,4 @@
-package ee.subjecta.subjecta_backend.client.contentful.model;
+package ee.subjecta.subjecta_backend.client.model;
 
 public record Sys(
         String id,

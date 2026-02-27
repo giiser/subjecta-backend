@@ -1,4 +1,4 @@
-package ee.subjecta.subjecta_backend.client.contentful.model;
+package ee.subjecta.subjecta_backend.client.model;
 
 import java.util.Map;
 

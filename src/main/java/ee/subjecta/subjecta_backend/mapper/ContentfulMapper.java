@@ -1,6 +1,6 @@
 package ee.subjecta.subjecta_backend.mapper;
 
-import ee.subjecta.subjecta_backend.client.contentful.model.ContentfulEntry;
+import ee.subjecta.subjecta_backend.client.model.ContentfulEntry;
 import ee.subjecta.subjecta_backend.dto.SubjectDto;
 
 import java.util.Map;

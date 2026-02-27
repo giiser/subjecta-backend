@@ -1,0 +1,20 @@
+contentful:
+  base-url: https://cdn.contentful.com
+  space-id: ${CONTENTFUL_SPACE_ID}
+  environment: master
+  access-token: ${CONTENTFUL_ACCESS_TOKEN}
+
+spring:
+  cache:
+    cache-names: contentfulEntries
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=5m
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      show-details: always
