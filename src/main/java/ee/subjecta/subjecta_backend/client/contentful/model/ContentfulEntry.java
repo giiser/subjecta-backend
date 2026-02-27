@@ -6,5 +6,5 @@ public record ContentfulEntry(
         Sys sys,
         Map<String, Object> fields
 ) {
-    public record Sys(String id){}
+
 }
