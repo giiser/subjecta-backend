@@ -2,25 +2,26 @@ package ee.subjecta.subjecta_backend.controller;
 
 import ee.subjecta.subjecta_backend.dto.LessonDto;
 import ee.subjecta.subjecta_backend.service.LessonService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/lessons")
 public class LessonController {
 
-    private final LessonService service;
+    private final LessonService lessonService;
 
-    public LessonController(LessonService service) {
-        this.service = service;
+    public LessonController(LessonService lessonService) {
+        this.lessonService = lessonService;
     }
 
-    @GetMapping("/topics/{topicId}/lessons")
-    public List<LessonDto> lessons(@PathVariable String topicId) {
-        return service.getLessonsByTopic(topicId);
+    @GetMapping
+    public List<LessonDto> lessons(
+            @RequestParam String topicId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size
+    ) {
+        return lessonService.getLessons(topicId, page, size);
     }
 }
