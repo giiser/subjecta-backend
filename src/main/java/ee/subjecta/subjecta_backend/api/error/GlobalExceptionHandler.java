@@ -2,7 +2,9 @@ package ee.subjecta.subjecta_backend.api.error;
 
 import ee.subjecta.subjecta_backend.exception.CmsException;
 import ee.subjecta.subjecta_backend.exception.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -32,12 +34,27 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ApiError handleGeneric(Exception ex) {
-        return new ApiError(
+    public ResponseEntity<?> handleGeneric(
+            Exception ex,
+            HttpServletRequest request) {
+
+        String path = request.getRequestURI();
+
+        // 🚨 Let Swagger handle its own exceptions
+        if (path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-ui")) {
+            throw new RuntimeException(ex);
+        }
+
+        ApiError error = new ApiError(
                 HttpStatus.INTERNAL_SERVER_ERROR.value(),
                 "INTERNAL_ERROR",
                 "Unexpected server error",
                 Instant.now()
         );
+
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(error);
     }
 }

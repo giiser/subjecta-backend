@@ -5,6 +5,6 @@ public record LessonDto(
         String topicId,
         String title,
         String summary,
-        String content
-) {
-}
+        String content,
+        int order
+) {}
