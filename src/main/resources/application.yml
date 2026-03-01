@@ -9,6 +9,29 @@ spring:
     cache-names: contentfulEntries
     caffeine:
       spec: maximumSize=500,expireAfterWrite=5m
+  datasource:
+    url: jdbc:postgresql://ep-billowing-poetry-aipe9y1h-pooler.c-4.us-east-1.aws.neon.tech/neondb?user=${PG_DB_USER}&password=${PG_DB_PASS}&sslmode=require&channelBinding=require
+    username: ${PG_DB_USER}
+    password: ${PG_DB_PASS}
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
 
 management:
   endpoints:
@@ -22,3 +45,9 @@ management:
 logging:
   pattern:
     console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] [%X{requestId}] %-5level %logger{36} - %msg%n"
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-expiration: 900000       # 15 min
+  refresh-expiration: 604800000   # 7 days
+

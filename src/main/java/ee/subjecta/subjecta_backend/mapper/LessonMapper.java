@@ -19,13 +19,16 @@ public class LessonMapper {
         // RichText → convert safely to string
         Object contentObj = lesson.fields().get("content");
         String content = contentObj != null ? contentObj.toString() : null;
+        Integer orderValue = (Integer) lesson.fields().get("order");
+        int order = orderValue != null ? orderValue : 0;
 
         return new LessonDto(
                 lesson.sys().id(),
                 topicId,
                 title,
                 summary,
-                content
+                content,
+                order
         );
     }
 
