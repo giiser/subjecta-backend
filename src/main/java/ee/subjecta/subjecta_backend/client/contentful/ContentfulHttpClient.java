@@ -2,15 +2,16 @@ package ee.subjecta.subjecta_backend.client.contentful;
 
 import ee.subjecta.subjecta_backend.client.model.ContentfulResponse;
 import ee.subjecta.subjecta_backend.exception.CmsException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.InvalidUrlException;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import io.micrometer.core.instrument.MeterRegistry;
@@ -25,10 +26,17 @@ public class ContentfulHttpClient implements ContentfulClient {
     private final ContentfulProperties properties;
     private final CacheManager cacheManager;
     private final MeterRegistry meterRegistry;
+    private static final Logger log = LoggerFactory.getLogger(ContentfulHttpClient.class);
 
     private HttpHeaders headers() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(properties.getAccessToken());
+
+        String requestId = MDC.get("requestId");
+        if (requestId != null) {
+            headers.set("X-Request-ID", requestId);
+        }
+
         return headers;
     }
 
@@ -83,6 +91,8 @@ public class ContentfulHttpClient implements ContentfulClient {
             meterRegistry.counter("cms.requests.success",
                     "contentType", contentType).increment();
 
+
+
             return response.getBody();
 
         } catch (Exception ex) {
@@ -90,6 +100,7 @@ public class ContentfulHttpClient implements ContentfulClient {
             meterRegistry.counter("cms.requests.failure",
                     "contentType", contentType).increment();
 
+            log.error("Failed to fetch entries from Contentful");
             throw new CmsException("Failed to fetch entries from Contentful", ex);
 
         } finally {
