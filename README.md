@@ -1,8 +1,6 @@
-📐 Architecture Diagram (Markdown for GitHub)
+# 🏗 System Architecture
 
-You can paste this directly into your README:
-
-🏗 System Architecture
+```
                          ┌────────────────────┐
                          │    Contentful CMS  │
                          │ (Subjects, Topics, │
@@ -37,17 +35,23 @@ You can paste this directly into your README:
                 │   (User Data   │      │
                 │   + Progress)  │      │
                 └────────────────┘      │
-                                         │
-                                ┌────────▼────────┐
-                                │  Spring Security │
-                                │  JWT Filter      │
-                                └────────┬────────┘
-                                         │
-                                  ┌──────▼──────┐
-                                  │ Controllers │
-                                  │  REST API   │
-                                  └─────────────┘
-🔄 Request Flow (Example: Access Lesson)
+                                        │
+                               ┌────────▼────────┐
+                               │  Spring Security │
+                               │  JWT Filter      │
+                               └────────┬────────┘
+                                        │
+                                 ┌──────▼──────┐
+                                 │ Controllers │
+                                 │  REST API   │
+                                 └─────────────┘
+```
+
+---
+
+## 🔄 Request Flow — Example: Access Lesson
+
+```
 Client
   ↓
 JWT Authentication Filter
@@ -61,7 +65,13 @@ ProgressService (check unlock rules)
 ContentfulClient (cached CMS call)
   ↓
 Return LessonWithAccessDto { locked: true/false }
-🔐 Authentication Flow
+```
+
+---
+
+## 🔐 Authentication Flow
+
+```
 Login Request
   ↓
 AuthController
@@ -71,10 +81,19 @@ AuthService
 Generate Access Token + Refresh Token
   ↓
 Return tokens
+```
 
-Subsequent Requests:
+**Subsequent Requests:**
+
+```
 Client → Bearer Token → JWT Filter → SecurityContext
-📊 Progress Calculation Flow
+```
+
+---
+
+## 📊 Progress Calculation Flow
+
+```
 User completes quiz
   ↓
 QuizService saves result
@@ -82,3 +101,4 @@ QuizService saves result
 ProgressService marks lesson complete
   ↓
 Topic & Subject percentage recalculated dynamically
+```
