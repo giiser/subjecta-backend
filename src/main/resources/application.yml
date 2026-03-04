@@ -51,3 +51,5 @@ jwt:
   access-expiration: 900000       # 15 min
   refresh-expiration: 604800000   # 7 days
 
+server:
+  port: ${PORT:8080}
