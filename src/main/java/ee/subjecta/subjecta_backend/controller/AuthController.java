@@ -3,7 +3,8 @@ package ee.subjecta.subjecta_backend.controller;
 import ee.subjecta.subjecta_backend.auth.PasswordResetService;
 import ee.subjecta.subjecta_backend.auth.RefreshTokenService;
 import ee.subjecta.subjecta_backend.auth.VerificationService;
-import ee.subjecta.subjecta_backend.client.contentful.ContentfulHttpClient;
+import ee.subjecta.subjecta_backend.auth.dto.LoginRequest;
+import ee.subjecta.subjecta_backend.auth.dto.RefreshRequest;
 import ee.subjecta.subjecta_backend.email.EmailService;
 import ee.subjecta.subjecta_backend.security.JwtService;
 import ee.subjecta.subjecta_backend.user.User;
@@ -60,10 +61,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public Map<String, String> login(
-            @RequestParam String username,
-            @RequestParam String password) {
+            @RequestBody LoginRequest request) {
 
-        User user = userService.authenticate(username, password);
+        User user = userService.authenticate(
+                request.username(),
+                request.password()
+        );
 
         String accessToken =
                 jwtService.generateAccessToken(user.getUsername());
@@ -79,15 +82,18 @@ public class AuthController {
         );
     }
 
+
     @PostMapping("/refresh")
     public Map<String, String> refresh(
-            @RequestParam String refreshToken) {
+            @RequestBody RefreshRequest request) {
 
-        refreshTokenService.validate(refreshToken);
+        refreshTokenService.validate(request.refreshToken());
 
-        String username = jwtService.extractUsername(refreshToken);
+        String username =
+                jwtService.extractUsername(request.refreshToken());
 
-        String newAccess = jwtService.generateAccessToken(username);
+        String newAccess =
+                jwtService.generateAccessToken(username);
 
         return Map.of("accessToken", newAccess);
     }
