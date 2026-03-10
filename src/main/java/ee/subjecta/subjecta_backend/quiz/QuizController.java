@@ -4,6 +4,7 @@ import ee.subjecta.subjecta_backend.dto.QuestionDto;
 import ee.subjecta.subjecta_backend.dto.QuizDto;
 import ee.subjecta.subjecta_backend.dto.QuizResultDto;
 import ee.subjecta.subjecta_backend.dto.QuizSubmissionDto;
+import ee.subjecta.subjecta_backend.exception.NotFoundException;
 import ee.subjecta.subjecta_backend.quiz.domain.Quiz;
 import ee.subjecta.subjecta_backend.service.LessonService;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -44,6 +45,10 @@ public class QuizController {
     public QuizDto getQuiz(@PathVariable String lessonId) {
 
         Quiz quiz = lessonService.getQuizForLesson(lessonId);
+
+        if (quiz == null) {
+            throw new NotFoundException("Quiz not found for lesson " + lessonId);
+        }
 
         List<QuestionDto> questions = quiz.questions().stream()
                 .map(q -> new QuestionDto(
