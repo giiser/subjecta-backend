@@ -85,35 +85,62 @@ public class LessonService {
 
         return new Quiz(lessonId, questions);
     }
-
     public Quiz getQuizForLesson(String lessonId) {
 
         var response = contentfulClient.entries(
-                "lesson",
+                "quiz",
                 Map.of(
-                        "sys.id", lessonId,
-                        "include", "2"
+                        "fields.lesson.sys.id", lessonId,
+                        "limit", "1000"
                 )
         );
 
-        ContentfulEntry lessonEntry = response.items().stream()
-                .findFirst()
-                .orElseThrow(() ->
-                        new RuntimeException("Lesson not found"));
+        if (response.items().isEmpty()) {
+            throw new RuntimeException("Quiz not found for lesson " + lessonId);
+        }
 
-        // Resolve quiz reference
-        String quizId = ContentfulReferenceHelper.extractReferenceId(lessonEntry, "quiz");
+        List<Question> questions = response.items().stream()
+                .sorted(Comparator.comparingInt(e ->
+                        (Integer) e.fields().getOrDefault("order", 0)
+                ))
+                .map(entry -> new Question(
+                        entry.sys().id(),
+                        (String) entry.fields().get("question"),
+                        (List<String>) entry.fields().get("options"),
+                        (Integer) entry.fields().get("correctIndex")
+                ))
+                .toList();
 
-        ContentfulEntry quizEntry = response.includes()
-                .getOrDefault("Entry", List.of())
-                .stream()
-                .filter(e -> e.sys().id().equals(quizId))
-                .findFirst()
-                .orElseThrow(() ->
-                        new RuntimeException("Quiz not found"));
-
-        return mapQuiz(lessonId, quizEntry);
+        return new Quiz(lessonId, questions);
     }
+//    public Quiz getQuizForLesson(String lessonId) {
+//
+//        var response = contentfulClient.entries(
+//                "lesson",
+//                Map.of(
+//                        "sys.id", lessonId,
+//                        "include", "2"
+//                )
+//        );
+//
+//        ContentfulEntry lessonEntry = response.items().stream()
+//                .findFirst()
+//                .orElseThrow(() ->
+//                        new RuntimeException("Lesson not found"));
+//
+//        // Resolve quiz reference
+//        String quizId = ContentfulReferenceHelper.extractReferenceId(lessonEntry, "quiz");
+//
+//        ContentfulEntry quizEntry = response.includes()
+//                .getOrDefault("Entry", List.of())
+//                .stream()
+//                .filter(e -> e.sys().id().equals(quizId))
+//                .findFirst()
+//                .orElseThrow(() ->
+//                        new RuntimeException("Quiz not found"));
+//
+//        return mapQuiz(lessonId, quizEntry);
+//    }
 
     public LessonDto getLessonById(String lessonId) {
 
