@@ -1,5 +1,6 @@
 package ee.subjecta.subjecta_backend.mapper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ee.subjecta.subjecta_backend.client.model.ContentfulEntry;
 import ee.subjecta.subjecta_backend.dto.LessonDto;
 import org.springframework.stereotype.Component;
@@ -9,6 +10,12 @@ import java.util.Map;
 @Component
 public class LessonMapper {
 
+    private final ObjectMapper objectMapper;
+
+    public LessonMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     public LessonDto toDto(ContentfulEntry lesson) {
 
         String topicId = extractReferenceIdSafe(lesson, "topic");
@@ -16,9 +23,18 @@ public class LessonMapper {
         String title = getString(lesson, "title");
         String summary = getString(lesson, "summary");
 
-        // RichText → convert safely to string
         Object contentObj = lesson.fields().get("content");
-        String content = contentObj != null ? contentObj.toString() : null;
+
+        String content = null;
+
+        if (contentObj != null) {
+            try {
+                content = objectMapper.writeValueAsString(contentObj);
+            } catch (Exception e) {
+                content = null;
+            }
+        }
+
         Integer orderValue = (Integer) lesson.fields().get("order");
         int order = orderValue != null ? orderValue : 0;
 
